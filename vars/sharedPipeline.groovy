@@ -4,7 +4,7 @@ def call() {
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhubpwd')
-        SLACK_CREDENTIALS = credentials('slackpwd')
+        SLACK_CREDENTIALS = credentials('b3ee302b-e782-4d8e-ba83-7fa591d43205')
     }
 
     parameters {
@@ -94,12 +94,28 @@ def call() {
         }
     }
 
-    post {
-        success {
-            slackSend(channel: '#builds', color: 'good', message: "Build and Deployment of Java and Python applications succeeded.", tokenCredentialId: 'slackpwd')
-        }
-        failure {
-            slackSend(channel: '#builds', color: 'danger', message: "Build and Deployment of Java and Python applications failed.", tokenCredentialId: 'slackpwd')
+   post {
+        always {
+            script {
+                def slackBaseUrl = 'https://slack.com/api/'
+                def slackChannel = '#builds'
+                def slackColor = currentBuild.currentResult == 'SUCCESS' ? 'good' : 'danger'
+                def slackMessage = "Build ${currentBuild.fullDisplayName} finished with status: ${currentBuild.currentResult}"
+
+                echo "Sending Slack notification to ${slackChannel} with message: ${slackMessage}"
+                
+               slackSend (
+                         baseUrl: 'https://yourteam.slack.com/api/',
+                         teamDomain: 'StarAppleInfotech',
+                         channel: '#builds',
+                         color: 'good',
+                         botUser: true,
+                         tokenCredentialId: 'b3ee302b-e782-4d8e-ba83-7fa591d43205',
+                         notifyCommitters: false,
+                         message: "Build shared_lib project #${env.BUILD_NUMBER} finished with status: ${currentBuild.currentResult}"
+                       )
+
+            }
         }
     }
 }
