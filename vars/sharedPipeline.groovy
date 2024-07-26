@@ -4,7 +4,7 @@ def call() {
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhubpwd')
-        SLACK_CREDENTIALS = credentials('b3ee302b-e782-4d8e-ba83-7fa591d43205')
+        SLACK_CREDENTIALS = credentials('jen-slack-pwd')
     }
 
     parameters {
@@ -110,7 +110,7 @@ def call() {
                          channel: '#builds',
                          color: 'good',
                          botUser: true,
-                         tokenCredentialId: 'b3ee302b-e782-4d8e-ba83-7fa591d43205',
+                         tokenCredentialId: 'jen-slack-pwd',
                          notifyCommitters: false,
                          message: "Build Shared_lib project #${env.BUILD_NUMBER} finished with status: ${currentBuild.currentResult}"
                        )
