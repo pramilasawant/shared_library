@@ -105,7 +105,7 @@ def call() {
                 echo "Sending Slack notification to ${slackChannel} with message: ${slackMessage}"
                 
                slackSend (
-                         baseUrl: 'https://yourteam.slack.com/api/',
+                         baseUrl: 'https://slack.com/api/',
                          teamDomain: 'StarAppleInfotech',
                          channel: '#builds',
                          color: 'good',
