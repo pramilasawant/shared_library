@@ -1,10 +1,11 @@
 def call() {
-   pipeline {
+  @Library('shared-lib') _
+pipeline {
     agent any
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhubpwd')
-        SLACK_CREDENTIALS = credentials('jen-slack-pwd')
+        SLACK_CREDENTIALS = credentials('b3ee302b-e782-4d8e-ba83-7fa591d43205')
     }
 
     parameters {
@@ -105,14 +106,14 @@ def call() {
                 echo "Sending Slack notification to ${slackChannel} with message: ${slackMessage}"
                 
                slackSend (
-                         baseUrl: 'https://slack.com/api/',
+                         baseUrl: 'https://yourteam.slack.com/api/',
                          teamDomain: 'StarAppleInfotech',
                          channel: '#builds',
                          color: 'good',
                          botUser: true,
-                         tokenCredentialId: 'jen-slack-pwd',
+                         tokenCredentialId: 'b3ee302b-e782-4d8e-ba83-7fa591d43205',
                          notifyCommitters: false,
-                         message: "Build Shared_lib project #${env.BUILD_NUMBER} finished with status: ${currentBuild.currentResult}"
+                         message: "Build Shared_lib-project #${env.BUILD_NUMBER} finished with status: ${currentBuild.currentResult}"
                        )
 
             }
