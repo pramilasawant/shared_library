@@ -111,7 +111,7 @@ def call() {
                         botUser: true,
                         tokenCredentialId: 'b3ee302b-e782-4d8e-ba83-7fa591d43205',
                         notifyCommitters: false,
-                        message: "Build Shared_lib-project #${env.BUILD_NUMBER} finished with status: ${currentBuild.currentResult}"
+                        message: "Build Final_project #${env.BUILD_NUMBER} finished with status: ${currentBuild.currentResult}"
                     )
                 }
             }
