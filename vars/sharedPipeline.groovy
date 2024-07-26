@@ -5,7 +5,7 @@ pipeline {
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhubpwd')
         SLACK_CREDENTIALS = credentials('b3ee302b-e782-4d8e-ba83-7fa591d43205')
-        Gitcredentials= '123' 
+        Gitcredentials = '123' 
     }
 
     parameters {
