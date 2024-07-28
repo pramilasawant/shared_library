@@ -72,7 +72,7 @@ def call() {
                             script {
                                 try {
                                     sh '''
-                                    helm upgrade --install java-app /var/lib/jenkins/workspace/j-p-project/helm/java-app \
+                                    helm upgrade --install java-app /var/lib/jenkins/workspace/j-p-project/testhello\
                                         --set image.repository=${params.DOCKERHUB_USERNAME}/${params.JAVA_IMAGE_NAME} \
                                         --set image.tag=latest \
                                         --namespace ${params.JAVA_NAMESPACE}
@@ -89,7 +89,7 @@ def call() {
                             script {
                                 try {
                                     sh '''
-                                    helm upgrade --install python-app /var/lib/jenkins/workspace/j-p-project/helm/python-app \
+                                    helm upgrade --install python-app /var/lib/jenkins/workspace/j-p-project/python-app \
                                         --set image.repository=${params.DOCKERHUB_USERNAME}/${params.PYTHON_IMAGE_NAME} \
                                         --set image.tag=latest \
                                         --namespace ${params.PYTHON_NAMESPACE}
