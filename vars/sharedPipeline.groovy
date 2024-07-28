@@ -71,7 +71,12 @@ def call() {
                         steps {
                             script {
                                 try {
-                                    sh 'kubectl apply -f /var/lib/jenkins/workspace/j-p-project/deploymentservice.yaml'
+                                    sh '''
+                                    helm upgrade --install java-app /var/lib/jenkins/workspace/j-p-project/helm/java-app \
+                                        --set image.repository=${params.DOCKERHUB_USERNAME}/${params.JAVA_IMAGE_NAME} \
+                                        --set image.tag=latest \
+                                        --namespace ${params.JAVA_NAMESPACE}
+                                    '''
                                 } catch (Exception e) {
                                     echo "Deployment failed: ${e.getMessage()}"
                                     error "Kubernetes deployment ended with HasError"
@@ -82,10 +87,17 @@ def call() {
                     stage('Deploy Python Application') {
                         steps {
                             script {
-                                kubernetesDeploy(
-                                    configs: 'deploymentservice.yaml',
-                                    kubeconfigId: 'k8sconfigpwd'
-                                )
+                                try {
+                                    sh '''
+                                    helm upgrade --install python-app /var/lib/jenkins/workspace/j-p-project/helm/python-app \
+                                        --set image.repository=${params.DOCKERHUB_USERNAME}/${params.PYTHON_IMAGE_NAME} \
+                                        --set image.tag=latest \
+                                        --namespace ${params.PYTHON_NAMESPACE}
+                                    '''
+                                } catch (Exception e) {
+                                    echo "Deployment failed: ${e.getMessage()}"
+                                    error "Kubernetes deployment ended with HasError"
+                                }
                             }
                         }
                     }
