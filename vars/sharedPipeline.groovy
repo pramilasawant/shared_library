@@ -42,7 +42,7 @@ def call() {
                             dir('testhello') { // Ensure this directory contains the pom.xml
                                 sh 'mvn clean install'
                                 script {
-                                    def image = docker.build("${params.DOCKERHUB_USERNAME}/${params.JAVA_IMAGE_NAME}")
+                                    def image = docker.build("${params.DOCKERHUB_USERNAME}/${params.JAVA_IMAGE_NAME}:${currentBuild.number}")
                                     docker.withRegistry('', 'dockerhubpwd') {
                                         image.push()
                                     }
@@ -54,7 +54,7 @@ def call() {
                         steps {
                             dir('python-app') {
                                 script {
-                                    def image = docker.build("${params.DOCKERHUB_USERNAME}/${params.PYTHON_IMAGE_NAME}")
+                                    def image = docker.build("${params.DOCKERHUB_USERNAME}/${params.PYTHON_IMAGE_NAME}:${currentBuild.number}")
                                     docker.withRegistry('', 'dockerhubpwd') {
                                         image.push()
                                     }
@@ -79,7 +79,7 @@ def call() {
                         steps {
                             script {
                                 try {
-                                    sh 'kubectl apply -f /var/lib/jenkins/workspace/j-p-project/deploymentservice.yaml'
+                                    sh "kubectl apply -f /var/lib/jenkins/workspace/j-p-project/deploymentservice.yaml --set image.tag=${currentBuild.number}"
                                 } catch (Exception e) {
                                     echo "Deployment failed: ${e.getMessage()}"
                                     error "Kubernetes deployment ended with HasError"
