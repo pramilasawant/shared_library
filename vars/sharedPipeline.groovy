@@ -73,27 +73,19 @@ def call() {
                 }
             }
 
-            stage('Deploy to Kubernetes') {
+            stage('Deploy to Kubernetes with helm') {
                 parallel {
-                    stage('Deploy Java Application') {
+                    stage('Deploy Java Application with Helm') {
                         steps {
                             script {
-                                try {
-                                    sh "kubectl apply -f /var/lib/jenkins/workspace/j-p-project/deploymentservice.yaml --set image.tag=${currentBuild.number}"
-                                } catch (Exception e) {
-                                    echo "Deployment failed: ${e.getMessage()}"
-                                    error "Kubernetes deployment ended with HasError"
-                                }
+                                sh "helm upgrade --install java-app ./helm/java --set image.repository=${params.DOCKERHUB_USERNAME}/${params.JAVA_IMAGE_NAME} --set image.tag=${currentBuild.number} --namespace ${params.JAVA_NAMESPACE}"
                             }
                         }
                     }
-                    stage('Deploy Python Application') {
+                    stage('Deploy Python Application with Helm') {
                         steps {
                             script {
-                                kubernetesDeploy(
-                                    configs: 'deploymentservice.yaml',
-                                    kubeconfigId: 'k8sconfigpwd'
-                                )
+                                sh "helm upgrade --install python-app ./helm/python --set image.repository=${params.DOCKERHUB_USERNAME}/${params.PYTHON_IMAGE_NAME} --set image.tag=${currentBuild.number} --namespace ${params.PYTHON_NAMESPACE}"
                             }
                         }
                     }
