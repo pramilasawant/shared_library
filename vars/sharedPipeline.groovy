@@ -12,7 +12,7 @@ pipeline {
             parallel {
                 stage('Clone Java Application') {
                     steps {
-                        git branch: "${params.GIT_BRANCH}", url: 'https://github.com/pramilasawant/springboot1-application.git'
+                        git branch: "${params.GIT_BRANCH}", url: 'https://github.com/pramilasawant/testhello.git'
                     }
                 }
                 stage('Clone Python Application') {
