@@ -65,6 +65,14 @@ def call() {
                 }
             }
 
+            stage('Get Approval') {
+                steps {
+                    script {
+                        input message: 'Do you approve this deployment?', ok: 'Yes, deploy'
+                    }
+                }
+            }
+
             stage('Deploy to Kubernetes') {
                 parallel {
                     stage('Deploy Java Application') {
