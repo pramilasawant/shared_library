@@ -78,7 +78,7 @@ def call() {
                     stage('Deploy Java Application with Helm') {
                         steps {
                             script {
-                                sh "helm upgrade --install java-app ./helm/java --set image.repository=${params.DOCKERHUB_USERNAME}/${params.JAVA_IMAGE_NAME} --set image.tag=${currentBuild.number} --namespace ${params.JAVA_NAMESPACE}"
+                                sh "helm upgrade --install testhello ./helm/java --set image.repository=${params.DOCKERHUB_USERNAME}/${params.JAVA_IMAGE_NAME} --set image.tag=${currentBuild.number} --namespace ${params.JAVA_NAMESPACE}"
                             }
                         }
                     }
