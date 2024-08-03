@@ -1,6 +1,5 @@
-def call() {
-     pipeline {
-       agent any
+pipeline {
+    agent any
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhunpwd')
         SLACK_CREDENTIALS = credentials('jen-slack-pwd')
@@ -65,12 +64,12 @@ def call() {
                 }
             }
         }
-        stage('Deploy to Kubernetes with helm') {
+        stage('Deploy to Kubernetes') {
             parallel {
                 stage('Deploy Java Application') {
                     steps {
                         script {
-                            sh "helm upgrade --install java-app ./helm/java --set image.repository=pramila188/testhello --set image.tag=${env.BUILD_NUMBER} --namespace test"
+                            sh "helm upgrade --install java-app ./helm/java --set image.repository=pramila188/testhello --set image.tag=${env.BUILD_NUMBER} --namespace test1"
                         }
                     }
                 }
