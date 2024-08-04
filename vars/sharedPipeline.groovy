@@ -113,6 +113,14 @@ def call() {
                         notifyCommitters: false,
                         message: "Build Final_project #${env.BUILD_NUMBER} finished with status: ${currentBuild.currentResult}"
                     )
+                    emailext (
+                        subject: "Build ${currentBuild.fullDisplayName} - ${currentBuild.currentResult}",
+                        body: """
+                        <p>Build ${currentBuild.fullDisplayName} finished with status: ${currentBuild.currentResult}</p>
+                        <p>Check the build details <a href="${env.BUILD_URL}">here</a></p>
+                        """,
+                        to: 'pramilanarawade70@gmail.com'
+                        )
                 }
             }
         }
