@@ -114,12 +114,11 @@ def call() {
                         message: "Build Final_project #${env.BUILD_NUMBER} finished with status: ${currentBuild.currentResult}"
                     )
                     emailext (
-                        subject: "Build ${currentBuild.fullDisplayName} - ${currentBuild.currentResult}",
-                        body: """
-                        <p>Build ${currentBuild.fullDisplayName} finished with status: ${currentBuild.currentResult}</p>
-                        <p>Check the build details <a href="${env.BUILD_URL}">here</a></p>
-                        """,
-                        to: 'pramilanarawade70@gmail.com'
+                         to: 'pramilanarawade70@gmail.com',
+                         subject: "NOTIFICATION: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' Completed",
+                         body: """<p>Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' completed.</p>
+                         <p>Check console output at <a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a></p>"""
+                        
                         )
                 }
             }
