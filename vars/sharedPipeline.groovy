@@ -152,4 +152,12 @@ def call() {
                         channel: '#builds',
                         color: slackColor,
                         botUser: true,
-                        to
+                        tokenCredentialId: 'b3ee302b-e782-4d8e-ba83-7fa591d43205',
+                        notifyCommitters: false,
+                        message: "Build Final_project #${env.BUILD_NUMBER} finished with status: ${currentBuild.currentResult}"
+                    )
+                }
+            }
+        }
+    }
+}
