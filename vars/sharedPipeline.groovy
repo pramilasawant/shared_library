@@ -73,17 +73,6 @@ def call() {
                 }
             }
 
-            stage('Install Helm') {
-                steps {
-                    sh '''
-                        wget https://get.helm.sh/helm-v3.5.2-linux-amd64.tar.gz
-                        tar -xvzf helm-v3.5.2-linux-amd64.tar.gz
-                        sudo cp -f linux-amd64/helm /usr/bin
-                        helm version
-                    '''
-                }
-            }
-
             stage('Build and Package Java Helm Chart') {
                 steps {
                     dir('java-app') {
