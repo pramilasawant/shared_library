@@ -125,6 +125,7 @@ def call() {
                             kubectl config get-contexts
                             kubectl get nodes
                             helm upgrade --install java-app ./testhello/myspringbootchart --namespace ${params.JAVA_NAMESPACE} --create-namespace
+                             kubernetesDeploy(configs: 'Build and Deploy Java and Python Application', kubeconfigId: 'k8spwd'
                         '''
                     }
                 }
@@ -138,6 +139,7 @@ def call() {
                             kubectl config get-contexts
                             kubectl get nodes
                             helm upgrade --install python-app ./python-app/my-python-app --namespace ${params.PYTHON_NAMESPACE} --create-namespace
+                            kubernetesDeploy(configs: 'Build and Deploy Java and Python Application', kubeconfigId: 'k8spwd'
                         '''
                     }
                 }
