@@ -85,9 +85,11 @@ def call() {
 
             stage('Build and Package Java Helm Chart') {
                 steps {
-                    dir('java-app') {
+                    dir('testhello') {
                         sh '''
+                            echo "Listing contents of testhello directory:"
                             ls -la
+                            echo "Searching for values.yaml in testhello directory:"
                             find . -name "values.yaml"
                             "${WORKSPACE}/yq" e -i '.image.tag = "latest"' ./myspringbootchart/values.yaml
                             helm template ./myspringbootchart
@@ -102,7 +104,9 @@ def call() {
                 steps {
                     dir('python-app') {
                         sh '''
+                            echo "Listing contents of python-app directory:"
                             ls -la
+                            echo "Searching for values.yaml in python-app directory:"
                             find . -name "values.yaml"
                             "${WORKSPACE}/yq" e -i '.image.tag = "latest"' ./my-python-app/values.yaml
                             helm template ./my-python-app
@@ -118,7 +122,7 @@ def call() {
                     withCredentials([file(credentialsId: 'kubeconfig-credentials', variable: 'KUBECONFIG')]) {
                         sh '''
                             export KUBECONFIG=${KUBECONFIG}
-                            helm upgrade --install java-app ./java-app/myspringbootchart --namespace ${params.JAVA_NAMESPACE} --create-namespace
+                            helm upgrade --install java-app ./testhello/myspringbootchart --namespace ${params.JAVA_NAMESPACE} --create-namespace
                         '''
                     }
                 }
