@@ -89,10 +89,10 @@ def call() {
                         sh '''
                             ls -la
                             find . -name "values.yaml"
-                            "${WORKSPACE}/yq" e -i '.image.tag = "latest"' ./helmchart/values.yaml
-                            helm template ./helmchart
-                            helm lint ./helmchart
-                            helm package ./helmchart --version "1.0.0"
+                            "${WORKSPACE}/yq" e -i '.image.tag = "latest"' ./myspringbootchart/values.yaml
+                            helm template ./myspringbootchart
+                            helm lint ./myspringbootchart
+                            helm package ./myspringbootchart --version "1.0.0"
                         '''
                     }
                 }
@@ -104,10 +104,10 @@ def call() {
                         sh '''
                             ls -la
                             find . -name "values.yaml"
-                            "${WORKSPACE}/yq" e -i '.image.tag = "latest"' ./helmchart/values.yaml
-                            helm template ./helmchart
-                            helm lint ./helmchart
-                            helm package ./helmchart --version "1.0.0"
+                            "${WORKSPACE}/yq" e -i '.image.tag = "latest"' ./my-python-app/values.yaml
+                            helm template ./my-python-app
+                            helm lint ./my-python-app
+                            helm package ./my-python-app --version "1.0.0"
                         '''
                     }
                 }
@@ -118,7 +118,7 @@ def call() {
                     withCredentials([file(credentialsId: 'kubeconfig-credentials', variable: 'KUBECONFIG')]) {
                         sh '''
                             export KUBECONFIG=${KUBECONFIG}
-                            helm upgrade --install java-app ./java-app/helmchart --namespace ${params.JAVA_NAMESPACE} --create-namespace
+                            helm upgrade --install java-app ./java-app/myspringbootchart --namespace ${params.JAVA_NAMESPACE} --create-namespace
                         '''
                     }
                 }
@@ -129,7 +129,7 @@ def call() {
                     withCredentials([file(credentialsId: 'kubeconfig-credentials', variable: 'KUBECONFIG')]) {
                         sh '''
                             export KUBECONFIG=${KUBECONFIG}
-                            helm upgrade --install python-app ./python-app/helmchart --namespace ${params.PYTHON_NAMESPACE} --create-namespace
+                            helm upgrade --install python-app ./python-app/my-python-app --namespace ${params.PYTHON_NAMESPACE} --create-namespace
                         '''
                     }
                 }
