@@ -122,6 +122,8 @@ def call() {
                     withCredentials([file(credentialsId: 'k8spwd', variable: 'KUBECONFIG')]) {
                         sh '''
                             export KUBECONFIG=${KUBECONFIG}
+                            kubectl config get-contexts
+                            kubectl get nodes
                             helm upgrade --install java-app ./testhello/myspringbootchart --namespace ${params.JAVA_NAMESPACE} --create-namespace
                         '''
                     }
@@ -133,6 +135,8 @@ def call() {
                     withCredentials([file(credentialsId: 'k8spwd', variable: 'KUBECONFIG')]) {
                         sh '''
                             export KUBECONFIG=${KUBECONFIG}
+                            kubectl config get-contexts
+                            kubectl get nodes
                             helm upgrade --install python-app ./python-app/my-python-app --namespace ${params.PYTHON_NAMESPACE} --create-namespace
                         '''
                     }
