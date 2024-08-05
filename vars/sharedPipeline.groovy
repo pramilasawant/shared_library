@@ -73,19 +73,29 @@ def call() {
                 }
             }
 
-            stage('Deploy to Kubernetes with helm') {
+            stage('Deploy to Kubernetes with Helm') {
                 parallel {
                     stage('Deploy Java Application with Helm') {
                         steps {
                             script {
-                               sh "helm upgrade --install testhello ./k8s-deployments/java-app --set image.repository=${params.DOCKERHUB_USERNAME}/${params.JAVA_IMAGE_NAME} --set image.tag=${currentBuild.number} --namespace ${params.JAVA_NAMESPACE}"
+                                sh """
+                                helm upgrade --install testhello ./k8s-deployments/java-app \\
+                                    --set image.repository=${params.DOCKERHUB_USERNAME}/${params.JAVA_IMAGE_NAME} \\
+                                    --set image.tag=${currentBuild.number} \\
+                                    --namespace ${params.JAVA_NAMESPACE}
+                                """
                             }
                         }
                     }
                     stage('Deploy Python Application with Helm') {
                         steps {
                             script {
-                                sh "helm upgrade --install python-app ./k8s-deployments/python-app --set image.repository=${params.DOCKERHUB_USERNAME}/${params.PYTHON_IMAGE_NAME} --set image.tag=${currentBuild.number} --namespace ${params.PYTHON_NAMESPACE}"
+                                sh """
+                                helm upgrade --install python-app ./k8s-deployments/python-app \\
+                                    --set image.repository=${params.DOCKERHUB_USERNAME}/${params.PYTHON_IMAGE_NAME} \\
+                                    --set image.tag=${currentBuild.number} \\
+                                    --namespace ${params.PYTHON_NAMESPACE}
+                                """
                             }
                         }
                     }
@@ -113,7 +123,6 @@ def call() {
                         notifyCommitters: false,
                         message: "Build Final_project #${env.BUILD_NUMBER} finished with status: ${currentBuild.currentResult}"
                     )
-                   
                 }
             }
         }
