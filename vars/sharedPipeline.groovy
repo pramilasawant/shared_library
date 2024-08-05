@@ -87,6 +87,8 @@ def call() {
                 steps {
                     dir('java-app') {
                         sh '''
+                            ls -la
+                            find . -name "values.yaml"
                             "${WORKSPACE}/yq" e -i '.image.tag = "latest"' ./helmchart/values.yaml
                             helm template ./helmchart
                             helm lint ./helmchart
@@ -100,6 +102,8 @@ def call() {
                 steps {
                     dir('python-app') {
                         sh '''
+                            ls -la
+                            find . -name "values.yaml"
                             "${WORKSPACE}/yq" e -i '.image.tag = "latest"' ./helmchart/values.yaml
                             helm template ./helmchart
                             helm lint ./helmchart
@@ -148,12 +152,4 @@ def call() {
                         channel: '#builds',
                         color: slackColor,
                         botUser: true,
-                        tokenCredentialId: 'b3ee302b-e782-4d8e-ba83-7fa591d43205',
-                        notifyCommitters: false,
-                        message: "Build Final_project #${env.BUILD_NUMBER} finished with status: ${currentBuild.currentResult}"
-                    )
-                }
-            }
-        }
-    }
-}
+                        to
