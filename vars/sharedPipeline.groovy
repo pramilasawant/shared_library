@@ -73,31 +73,61 @@ def call() {
                 }
             }
 
-            stage('Deploy to Kubernetes with Helm') {
-                parallel {
-                    stage('Deploy Java Application with Helm') {
-                        steps {
-                            script {
-                                sh """
-                                helm upgrade --install testhello ./k8s-deployments/java-app \\
-                                    --set image.repository=${params.DOCKERHUB_USERNAME}/${params.JAVA_IMAGE_NAME} \\
-                                    --set image.tag=${currentBuild.number} \\
-                                    --namespace ${params.JAVA_NAMESPACE}
-                                """
-                            }
-                        }
+            stage('Install Helm') {
+                steps {
+                    sh '''
+                        wget https://get.helm.sh/helm-v3.5.2-linux-amd64.tar.gz
+                        tar -xvzf helm-v3.5.2-linux-amd64.tar.gz
+                        sudo cp -f linux-amd64/helm /usr/bin
+                        helm version
+                    '''
+                }
+            }
+
+            stage('Build and Package Java Helm Chart') {
+                steps {
+                    dir('java-app') {
+                        sh '''
+                            yq e -i '.image.tag = "latest"' ./helmchart/values.yaml
+                            helm template ./helmchart
+                            helm lint ./helmchart
+                            helm package ./helmchart --version "1.0.0"
+                        '''
                     }
-                    stage('Deploy Python Application with Helm') {
-                        steps {
-                            script {
-                                sh """
-                                helm upgrade --install python-app ./k8s-deployments/python-app \\
-                                    --set image.repository=${params.DOCKERHUB_USERNAME}/${params.PYTHON_IMAGE_NAME} \\
-                                    --set image.tag=${currentBuild.number} \\
-                                    --namespace ${params.PYTHON_NAMESPACE}
-                                """
-                            }
-                        }
+                }
+            }
+
+            stage('Build and Package Python Helm Chart') {
+                steps {
+                    dir('python-app') {
+                        sh '''
+                            yq e -i '.image.tag = "latest"' ./helmchart/values.yaml
+                            helm template ./helmchart
+                            helm lint ./helmchart
+                            helm package ./helmchart --version "1.0.0"
+                        '''
+                    }
+                }
+            }
+
+            stage('Deploy Java Application to Kubernetes') {
+                steps {
+                    withCredentials([file(credentialsId: 'kubeconfig-credentials', variable: 'KUBECONFIG')]) {
+                        sh '''
+                            export KUBECONFIG=${KUBECONFIG}
+                            helm upgrade --install java-app ./java-app/helmchart --namespace ${params.JAVA_NAMESPACE} --create-namespace
+                        '''
+                    }
+                }
+            }
+
+            stage('Deploy Python Application to Kubernetes') {
+                steps {
+                    withCredentials([file(credentialsId: 'kubeconfig-credentials', variable: 'KUBECONFIG')]) {
+                        sh '''
+                            export KUBECONFIG=${KUBECONFIG}
+                            helm upgrade --install python-app ./python-app/helmchart --namespace ${params.PYTHON_NAMESPACE} --create-namespace
+                        '''
                     }
                 }
             }
