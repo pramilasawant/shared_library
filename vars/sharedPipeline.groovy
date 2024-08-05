@@ -73,6 +73,15 @@ def call() {
                 }
             }
 
+            stage('Install yq') {
+                steps {
+                    sh '''
+                        wget https://github.com/mikefarah/yq/releases/download/v4.6.1/yq_linux_amd64 -O /usr/bin/yq
+                        chmod +x /usr/bin/yq
+                    '''
+                }
+            }
+
             stage('Build and Package Java Helm Chart') {
                 steps {
                     dir('java-app') {
