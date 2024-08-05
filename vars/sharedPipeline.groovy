@@ -76,9 +76,9 @@ def call() {
             stage('Install yq') {
                 steps {
                     sh '''
-                        wget https://github.com/mikefarah/yq/releases/download/v4.6.1/yq_linux_amd64 -O ${WORKSPACE}/yq
-                        chmod +x ${WORKSPACE}/yq
-                        export PATH=${WORKSPACE}:$PATH
+                        wget https://github.com/mikefarah/yq/releases/download/v4.6.1/yq_linux_amd64 -O "${WORKSPACE}/yq"
+                        chmod +x "${WORKSPACE}/yq"
+                        export PATH="${WORKSPACE}:$PATH"
                     '''
                 }
             }
@@ -87,7 +87,7 @@ def call() {
                 steps {
                     dir('java-app') {
                         sh '''
-                            ${WORKSPACE}/yq e -i '.image.tag = "latest"' ./helmchart/values.yaml
+                            "${WORKSPACE}/yq" e -i '.image.tag = "latest"' ./helmchart/values.yaml
                             helm template ./helmchart
                             helm lint ./helmchart
                             helm package ./helmchart --version "1.0.0"
@@ -100,7 +100,7 @@ def call() {
                 steps {
                     dir('python-app') {
                         sh '''
-                            ${WORKSPACE}/yq e -i '.image.tag = "latest"' ./helmchart/values.yaml
+                            "${WORKSPACE}/yq" e -i '.image.tag = "latest"' ./helmchart/values.yaml
                             helm template ./helmchart
                             helm lint ./helmchart
                             helm package ./helmchart --version "1.0.0"
