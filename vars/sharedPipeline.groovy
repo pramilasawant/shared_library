@@ -112,13 +112,10 @@ def call() {
             stage('Deploy Java Application to Kubernetes') {
                 steps {
                     script {
-                        kubernetesDeploy( configs: 
-                                         kubeconfigId: 'kubeconfif1pwd')
-                         {
-                            sh '''
-                                helm upgrade --install testhello ./testhello/myspringbootchart --namespace ${params.JAVA_NAMESPACE} --create-namespace
-                            '''
-                        }
+                        kubernetesDeploy(
+                            configs: 'Build and Deploy Java and Python Applications',
+                            kubeconfigId: 'kubeconfig1pwd'
+                        )
                     }
                 }
             }
@@ -126,11 +123,10 @@ def call() {
             stage('Deploy Python Application to Kubernetes') {
                 steps {
                     script {
-                        withKubeConfig([credentialsId: 'kubeconfig1pwd']) {
-                            sh '''
-                                helm upgrade --install python-app ./python-app/my-python-app --namespace ${params.PYTHON_NAMESPACE} --create-namespace
-                            '''
-                        }
+                        kubernetesDeploy(
+                            configs: 'Build and Deploy Java and Python Applications',
+                            kubeconfigId: 'kubeconfig1pwd'
+                        )
                     }
                 }
             }
@@ -146,7 +142,7 @@ def call() {
 
                     echo "Sending Slack notification to ${slackChannel} with message: ${slackMessage}"
 
-                    slackSend (
+                    slackSend(
                         baseUrl: 'https://yourteam.slack.com/api/',
                         teamDomain: 'StarAppleInfotech',
                         channel: '#builds',
