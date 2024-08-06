@@ -39,7 +39,7 @@ def call() {
                 parallel {
                     stage('Build and Push Java Image') {
                         steps {
-                            dir('testhello') { // Ensure this directory contains the pom.xml
+                            dir('testhello') {
                                 sh 'mvn clean install'
                                 script {
                                     def image = docker.build("${params.DOCKERHUB_USERNAME}/${params.JAVA_IMAGE_NAME}:${currentBuild.number}")
@@ -121,8 +121,20 @@ def call() {
                 steps {
                     withCredentials([file(credentialsId: 'k8spwd', variable: 'KUBECONFIG')]) {
                         sh '''
-                           
-                             kubernetesDeploy(configs: 'Build and Deploy Java and Python Application', kubeconfigId: 'k8spwd'
+                            if kubectl get namespace "${params.JAVA_NAMESPACE}" &> /dev/null; then
+                              echo "Namespace ${params.JAVA_NAMESPACE} exists."
+                            else
+                              echo "Namespace ${params.JAVA_NAMESPACE} does not exist. Creating..."
+                              kubectl create namespace "${params.JAVA_NAMESPACE}"
+                            fi
+
+                            if helm ls -n "${params.JAVA_NAMESPACE}" -q | grep -q "^${params.JAVA_IMAGE_NAME}$"; then
+                              echo "Helm release ${params.JAVA_IMAGE_NAME} exists. Upgrading..."
+                              helm upgrade "${params.JAVA_IMAGE_NAME}" ./testhello/myspringbootchart -n "${params.JAVA_NAMESPACE}" -f ./testhello/myspringbootchart/values.yaml
+                            else
+                              echo "Helm release ${params.JAVA_IMAGE_NAME} does not exist. Installing..."
+                              helm install "${params.JAVA_IMAGE_NAME}" ./testhello/myspringbootchart -n "${params.JAVA_NAMESPACE}" -f ./testhello/myspringbootchart/values.yaml
+                            fi
                         '''
                     }
                 }
@@ -132,8 +144,20 @@ def call() {
                 steps {
                     withCredentials([file(credentialsId: 'k8spwd', variable: 'KUBECONFIG')]) {
                         sh '''
-                           
-                            kubernetesDeploy(configs: 'Build and Deploy Java and Python Application', kubeconfigId: 'k8spwd'
+                            if kubectl get namespace "${params.PYTHON_NAMESPACE}" &> /dev/null; then
+                              echo "Namespace ${params.PYTHON_NAMESPACE} exists."
+                            else
+                              echo "Namespace ${params.PYTHON_NAMESPACE} does not exist. Creating..."
+                              kubectl create namespace "${params.PYTHON_NAMESPACE}"
+                            fi
+
+                            if helm ls -n "${params.PYTHON_NAMESPACE}" -q | grep -q "^${params.PYTHON_IMAGE_NAME}$"; then
+                              echo "Helm release ${params.PYTHON_IMAGE_NAME} exists. Upgrading..."
+                              helm upgrade "${params.PYTHON_IMAGE_NAME}" ./python-app/my-python-app -n "${params.PYTHON_NAMESPACE}" -f ./python-app/my-python-app/values.yaml
+                            else
+                              echo "Helm release ${params.PYTHON_IMAGE_NAME} does not exist. Installing..."
+                              helm install "${params.PYTHON_IMAGE_NAME}" ./python-app/my-python-app -n "${params.PYTHON_NAMESPACE}" -f ./python-app/my-python-app/values.yaml
+                            fi
                         '''
                     }
                 }
