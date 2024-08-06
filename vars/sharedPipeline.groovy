@@ -119,22 +119,46 @@ def call() {
 
             stage('Deploy Java Application to Kubernetes') {
                 steps {
-                    withCredentials([file(credentialsId: 'k8spwd', variable: 'KUBECONFIG')]) {
-                        sh '''
-                           
-                             kubernetesDeploy(configs: 'Build and Deploy Java and Python Application', kubeconfigId: 'k8spwd'
-                        '''
+                    script {
+                        withCredentials([file(credentialsId: 'k8spwd', variable: 'KUBECONFIG')]) {
+                            def javaHelmRelease = 'testhello'
+                            def javaHelmChartDir = './myspringbootchart'
+                            def javaNamespace = params.JAVA_NAMESPACE
+
+                            try {
+                                sh """
+                                    helm upgrade --install ${javaHelmRelease} ${javaHelmChartDir} --namespace ${javaNamespace} --create-namespace
+                                """
+                                echo "Java application deployed successfully."
+                            } catch (Exception e) {
+                                echo "Failed to deploy Java application: ${e.message}"
+                                currentBuild.result = 'FAILURE'
+                                error("Deployment failed.")
+                            }
+                        }
                     }
                 }
             }
 
             stage('Deploy Python Application to Kubernetes') {
                 steps {
-                    withCredentials([file(credentialsId: 'k8spwd', variable: 'KUBECONFIG')]) {
-                        sh '''
-                           
-                            kubernetesDeploy(configs: 'Build and Deploy Java and Python Application', kubeconfigId: 'k8spwd'
-                        '''
+                    script {
+                        withCredentials([file(credentialsId: 'k8spwd', variable: 'KUBECONFIG')]) {
+                            def pythonHelmRelease = 'python-app'
+                            def pythonHelmChartDir = './my-python-app'
+                            def pythonNamespace = params.PYTHON_NAMESPACE
+
+                            try {
+                                sh """
+                                    helm upgrade --install ${pythonHelmRelease} ${pythonHelmChartDir} --namespace ${pythonNamespace} --create-namespace
+                                """
+                                echo "Python application deployed successfully."
+                            } catch (Exception e) {
+                                echo "Failed to deploy Python application: ${e.message}"
+                                currentBuild.result = 'FAILURE'
+                                error("Deployment failed.")
+                            }
+                        }
                     }
                 }
             }
@@ -164,3 +188,4 @@ def call() {
             }
         }
     }
+}
