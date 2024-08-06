@@ -5,6 +5,7 @@ def call() {
         environment {
             DOCKERHUB_CREDENTIALS = credentials('dockerhubpwd')
             SLACK_CREDENTIALS = credentials('b3ee302b-e782-4d8e-ba83-7fa591d43205')
+            KUBECONFIG_CREDENTIALS = credentials('k8spwd')
         }
 
         parameters {
@@ -39,7 +40,7 @@ def call() {
                 parallel {
                     stage('Build and Push Java Image') {
                         steps {
-                            dir('testhello') { // Ensure this directory contains the pom.xml
+                            dir('testhello') {
                                 sh 'mvn clean install'
                                 script {
                                     def image = docker.build("${params.DOCKERHUB_USERNAME}/${params.JAVA_IMAGE_NAME}:${currentBuild.number}")
@@ -119,46 +120,22 @@ def call() {
 
             stage('Deploy Java Application to Kubernetes') {
                 steps {
-                    script {
-                        withCredentials([file(credentialsId: 'k8spwd', variable: 'KUBECONFIG')]) {
-                            def javaHelmRelease = 'testhello'
-                            def javaHelmChartDir = './myspringbootchart'
-                            def javaNamespace = params.JAVA_NAMESPACE
-
-                            try {
-                                sh """
-                                    helm upgrade --install ${javaHelmRelease} ${javaHelmChartDir} --namespace ${javaNamespace} --create-namespace
-                                """
-                                echo "Java application deployed successfully."
-                            } catch (Exception e) {
-                                echo "Failed to deploy Java application: ${e.message}"
-                                currentBuild.result = 'FAILURE'
-                                error("Deployment failed.")
-                            }
-                        }
+                    withCredentials([file(credentialsId: 'k8spwd', variable: 'KUBECONFIG')]) {
+                        sh '''
+                            export KUBECONFIG=$KUBECONFIG
+                            helm upgrade --install testhello ./myspringbootchart --namespace ${params.JAVA_NAMESPACE} --create-namespace
+                        '''
                     }
                 }
             }
 
             stage('Deploy Python Application to Kubernetes') {
                 steps {
-                    script {
-                        withCredentials([file(credentialsId: 'k8spwd', variable: 'KUBECONFIG')]) {
-                            def pythonHelmRelease = 'python-app'
-                            def pythonHelmChartDir = './my-python-app'
-                            def pythonNamespace = params.PYTHON_NAMESPACE
-
-                            try {
-                                sh """
-                                    helm upgrade --install ${pythonHelmRelease} ${pythonHelmChartDir} --namespace ${pythonNamespace} --create-namespace
-                                """
-                                echo "Python application deployed successfully."
-                            } catch (Exception e) {
-                                echo "Failed to deploy Python application: ${e.message}"
-                                currentBuild.result = 'FAILURE'
-                                error("Deployment failed.")
-                            }
-                        }
+                    withCredentials([file(credentialsId: 'k8spwd', variable: 'KUBECONFIG')]) {
+                        sh '''
+                            export KUBECONFIG=$KUBECONFIG
+                            helm upgrade --install python-app ./my-python-app --namespace ${params.PYTHON_NAMESPACE} --create-namespace
+                        '''
                     }
                 }
             }
