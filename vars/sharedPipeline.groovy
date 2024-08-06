@@ -112,7 +112,9 @@ def call() {
             stage('Deploy Java Application to Kubernetes') {
                 steps {
                     script {
-                        withKubeConfig([credentialsId: 'kubeconfig1pwd']) {
+                        kubernetesDeploy( configs: 
+                                         kubeconfigId: 'kubeconfif1pwd')
+                         {
                             sh '''
                                 helm upgrade --install testhello ./testhello/myspringbootchart --namespace ${params.JAVA_NAMESPACE} --create-namespace
                             '''
